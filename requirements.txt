@@ -1,0 +1,4 @@
+psycopg2-binary
+PyGithub
+python-dotenv
+gql[all]

@@ -1,0 +1,23 @@
+query Search($query: String!, $type: SearchType!, $perPage: Int!, $after: String) {
+    search(type: $type, query: $query, first: $perPage, after: $after) {
+        edges {
+            node {
+                ... on User {
+                    login
+                    location
+                }
+                ... on Repository {
+                    name
+                    description
+                }
+                ... on Comment {
+                    body
+                }
+            }
+        }
+        pageInfo {
+            endCursor
+            hasNextPage
+        }
+    }
+}
