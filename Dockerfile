@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3
 
 WORKDIR /app
 
@@ -7,4 +7,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "./src/main.py" ]
+CMD [ "python", "./src/search_users.py" ]
