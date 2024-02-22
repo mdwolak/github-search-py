@@ -1,23 +1,123 @@
-query Search($query: String!, $type: SearchType!, $perPage: Int!, $after: String) {
-    search(type: $type, query: $query, first: $perPage, after: $after) {
-        edges {
-            node {
-                ... on User {
-                    login
-                    location
-                }
-                ... on Repository {
-                    name
-                    description
-                }
-                ... on Comment {
-                    body
-                }
-            }
-        }
-        pageInfo {
-            endCursor
-            hasNextPage
-        }
+query Search($query: String!, $type: SearchType!, $perPage: Int!, $after: String, $extended: Boolean = false) {
+  search(type: $type, query: $query, first: $perPage, after: $after) {
+    totalCount : userCount
+    pageInfo {
+      hasNextPage
+      endCursor
     }
+    items: nodes {
+      ... on User {
+        avatarUrl
+        bio
+        company
+        # companyHTML
+        createdAt
+        email
+        # enterprises requires permission
+        # estimatedNextSponsorsPayoutInCents # zero for now
+        followers {
+          totalCount
+        }
+        hasSponsorsListing # True if this user/organization has a GitHub Sponsors listing.
+        id
+        # isBountyHunter # Boolean! Whether or not this user is a participant in the GitHub Security Bug Bounty.
+        # isDeveloperProgramMember Boolean! A person that builds and integration with GitHub API
+        # isGitHubStar
+        isHireable
+        # itemShowcase ProfileItemShowcase! Showcases a selection of repositories and gists that the profile owner has either curated or that have been selected automatically based on popularity.
+        # # Showcases a selection of repositories and gists that the profile owner has either curated or that have been selected automatically based on popularity.
+        location
+        login
+        # monthlyEstimatedSponsorsIncomeInCents
+        name
+        # # Verified email addresses that match verified domains for a specified organization the user is a member of.
+        # # organizationVerifiedDomainEmails(login: String!): [String!]!
+
+        # # A list of packages under the owner.
+        # packages(first: 100) {
+        #   totalCount
+        #   nodes {
+        #     name
+        #   }
+        # }
+        # pinnedItems {
+        #   totalCount
+        # }
+        # A list of projects under the owner.
+        # projects(first: 100) {
+        #   edges {
+        #     node {
+        #       name
+        #     }
+        #   }
+        # }
+        # pullRequests {
+        #  totalCount
+        # }
+        # recentProjects ( after String, before String, first Int, last Int ) ProjectV2Connection! Recent projects that this user has modified in the context of the owner.
+
+        # repositoriesContributedTo A list of repositories that the user recently contributed to.
+        # resourcePath
+        socialAccounts(first: 100) {
+          totalCount
+          nodes {
+            displayName
+            provider
+            url
+          }
+        }
+        status {
+          message
+        }
+
+        twitterUsername
+        updatedAt
+        url
+        websiteUrl
+
+        ... on User @include(if: $extended) {
+          organizations (first: 100, orderBy: { field: LOGIN, direction: ASC }) {
+            totalCount
+            nodes {
+              login
+              location
+            }
+          }
+          
+          repositories(
+            first: 100
+            isArchived: false
+            orderBy: { field: UPDATED_AT, direction: DESC }
+          ) {
+            totalCount
+          #  totalDiskUsage
+          #  nodes {
+          #    name
+          #  }
+          }
+
+          sponsors {
+            totalCount
+          }
+          
+          # Repositories the user has contributed to, ordered by contribution rank, plus repositories the user has created
+          topRepositories(first: 2, orderBy: { field: UPDATED_AT, direction: DESC }) {
+            totalCount
+            nodes {
+              name
+              url
+            }
+          }
+
+        }
+      }
+
+      ... on Organization {
+        id
+        login
+        name
+      }
+
+    }
+  }
 }
